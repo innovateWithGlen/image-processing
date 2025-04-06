@@ -1,0 +1,28 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Read image in grayscale
+img = cv2.imread('C:/Users/glenm/OneDrive/Desktop/Screenshot 2025-01-28 143010.png', cv2.IMREAD_GRAYSCALE)
+
+# Contrast stretching
+stretched = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX)
+
+# Log transformation
+log_image = np.log1p(img.astype(np.float32))
+log_image = log_image * (255 / np.log1p(255))
+log_transformed = np.uint8(np.clip(log_image, 0, 255))
+
+# Negative transformation
+negative = cv2.bitwise_not(img)
+
+# Display images using Matplotlib
+titles = ["Original", "Contrast Stretching", "Log Transformation", "Negative"]
+images = [img, stretched, log_transformed, negative]
+plt.figure(figsize=(12, 5))
+for i in range(4):
+ plt.subplot(1, 4, i+1)
+ plt.imshow(images[i], cmap='gray')
+ plt.title(titles[i])
+ plt.axis("off")
+plt.show()
