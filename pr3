@@ -14,6 +14,7 @@ quant_levels = [256, 128, 64, 32, 16, 8, 4, 2]
 quantized_images = [quantize_image(img, level) for level in quant_levels]
 titles = [f"{lvl} Levels" for lvl in quant_levels]
 
+
 # Display images
 plt.figure(figsize=(12, 8))
 for i in range(len(quantized_images)):
