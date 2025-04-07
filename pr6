@@ -1,0 +1,38 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Read image in grayscale
+img = cv2.imread('D:/img1.png', cv2.IMREAD_GRAYSCALE)
+
+# Convert image to logarithmic domain
+img_log = np.log1p(img.astype(np.float32))
+
+# Perform Fourier Transform
+img_fft = np.fft.fft2(img_log)
+img_fft_shift = np.fft.fftshift(img_fft)
+ 
+# Create a high-pass filter
+rows, cols = img.shape
+x, y = np.meshgrid (np.linspace(-0.5, 0.5, cols), 
+                   np.linspace(-0.5, 0.5, rows))
+d = np.sqrt(x**2 + y**2)
+hp_filter = 1 - np.exp(-(d**2) / (0.05**2))
+
+# Apply filter and inverse transform
+img_fft_filtered = img_fft_shift * hp_filter
+img_ifft = np.fft.ifft2(np.fft.ifftshift(img_fft_filtered))
+homomorphic = np.expm1(np.real(img_ifft))
+homomorphic = cv2.normalize(homomorphic, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+# Display images
+titles = ["Original", "Homomorphic Filter"]
+images = [img, homomorphic]
+
+plt.figure(figsize=(8, 4))
+for i in range(2):
+ plt.subplot(1, 2, i+1)
+ plt.imshow(images[i], cmap='gray')
+ plt.title(titles[i])
+ plt.axis("off")
+plt.show()
